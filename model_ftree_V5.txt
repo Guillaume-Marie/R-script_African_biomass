@@ -1,0 +1,24 @@
+model{  
+    for( i in 1:M) {  
+      bb[i] ~ dnorm(mu[i],tau)C(0,)
+      mu[i] <- BMrefT*ftree_lc + BMrefH* (1-fbare_lc-ftree_lc)
+    } 
+    sigma ~ dunif(1,200)
+    cert_w ~ dunif(1,1000)
+    cert_b ~ dunif(1,1000)   
+    tau <- 1/(sigma*sigma)
+    ftree_a <- (ftree_teta-ESAlw)/(ESAup-ESAlw)*(cert_w-2)+1
+    ftree_b <- cert_w-ftree_a
+    fbare_a <- (fbare_teta-BARElw)/(BAREup-BARElw)*(cert_b-2)+1
+    fbare_b <- cert_b-fbare_a
+    fbare ~ dbeta(fbare_a,fbare_b)
+    fbare_lc <- fbare *(BAREup-BARElw)+BARElw
+    th <- 1-fbare_lc-0.01
+    f1 ~  dbeta(ftree_a,ftree_b)C(,th)
+    ftree_lc <- f1*(ESAup-ESAlw)+ESAlw
+    fherb_lc <- 1-fbare_lc-ftree_lc
+    tau.w <- 1/(bfw_s*bfw_s)
+    tau.h <- 1/(bfh_s*bfh_s)
+    BMrefT ~ dnorm(bfw,tau.w)C(0,)
+    BMrefH ~ dnorm(bfh,tau.h)C(0,) 
+}
