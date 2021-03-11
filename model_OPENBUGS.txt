@@ -1,3 +1,7 @@
+# This TXT file is use by the OPENBUGS packages in R to create the model
+# M indices represent the number of cell
+# "C(0,)" means the distribution is truncated in order to ovoid negative solutions
+# "bb" is a pure pixel representing a single biomass value and a single land cover type
 model{  
     for( i in 1:M) {  
       bb[i] ~ dnorm(mu[i],tau)C(0,)
