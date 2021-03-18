@@ -58,13 +58,7 @@ setprior <- function(cert,ftree_teta,brefp,fcp,LCTc){
 
 prior.frac <- read.table("prior_Fraction.csv",dec=",",sep=" ",header=TRUE)
 model.struct <- "model_OPENBUGS.txt" 
-biomass.map <- dbConnect(RSQLite::SQLite(), "temp_bm_02.gpkg")
-
-ybio <- dbGetQuery(biomass.map,"SELECT LC_majority, MAP_mean, 
-               BM_majority FROM temp_bm_02 WHERE LC_variety==1 AND 
-               LC_majority IN (10,11,30,40,50,60,61,62,100,110,120,130,150,153,160)",
-               params = 0)
-ybio <- subset(na.omit(ybio), BM_majority>0)  
+biomass.map <- read.table("ybio.txt", header=TRUE) 
 
 LCT <- c(10,11,30,40,50,60,61,62,100,110,120,130,150,153,160)
 LCTc <- as.character(LCT)
@@ -80,11 +74,11 @@ biorefh_up <- numeric(length(LCT)); biorefh_lw <- numeric(length(LCT))
 CIMAPul <- numeric(length(LCT)); CIMAPup <- numeric(length(LCT))
 for(i in LCT){
    j <- j+1 
-   ybio <- subset(ytot,LC_majority==i)
-   qnt <- quantile(ybio$BM_majority, probs=c(.25, .75), na.rm = T)
-   caps <- quantile(ybio$BM_majority, probs=c(.05, .95), na.rm = T)
-   H <- 1.5 * IQR(ybio$BM_majority, na.rm = T)
-   dd <- ybio[ybio$BM_majority > (qnt[1] - H),]
+   ybio <- subset(biomass.map,LC_majority==i)
+   qnt <- quantile(biomass.map$BM_majority, probs=c(.25, .75), na.rm = T)
+   caps <- quantile(biomass.map$BM_majority, probs=c(.05, .95), na.rm = T)
+   H <- 1.5 * IQR(biomass.map$BM_majority, na.rm = T)
+   dd <- biomass.map[biomass.map$BM_majority > (qnt[1] - H),]
    ybio2 <- dd[dd$BM_majority < (qnt[2] + H),]
    ybio3 <- rm.outlier(ybio2$BM_majority)
    CIMAPup[j] <- quantile(ybio2$MAP_mean,0.75)
