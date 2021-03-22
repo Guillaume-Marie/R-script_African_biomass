@@ -1,5 +1,5 @@
 # R-script_African_biomass
-R scripts used to carry out all the analysis and figures of the African biomass paper under review. [R2OpenBUGS](https://cran.r-project.org/web/packages/R2OpenBUGS/R2OpenBUGS.pdf) is an R package that allowed to use BUGS framework into [R](https://cran.r-project.org/). It also mean that R2OpenBUGS is mandatory to be able to run our R script. You can found more detail on 
+R scripts used to carry out all the analysis and figures of the African biomass paper under review. [R2OpenBUGS](https://cran.r-project.org/web/packages/R2OpenBUGS/R2OpenBUGS.pdf) is an R package that allowed to use BUGS framework into [R](https://cran.r-project.org/). It also mean that R2OpenBUGS is mandatory to be able to run our R script.
 
 # Files description
 
