@@ -9,7 +9,7 @@ library("twosamples")
 library("outliers")
 library("mixdist")
 
-# Create the function.
+# setprior is a function that prior cover fraction from a table and reformat them to be use in this script
 setprior <- function(cert,ftree_teta,brefp,fcp,LCTc){    
     a_MIX <- (ftree_teta-fcp$ftree_ESA_lw)/(fcp$ftree_ESA_up-fcp$ftree_ESA_lw)*(cert-2)+1
     b_MIX <- cert-a_MIX
@@ -56,10 +56,12 @@ setprior <- function(cert,ftree_teta,brefp,fcp,LCTc){
     return(list(priors1,pr,prb))  
 }
 
+# Load prior fraction table, OpenBUGS model and biomass dataset
 prior.frac <- read.table("prior_Fraction.csv",dec=",",sep=" ",header=TRUE)
 model.struct <- "model_OPENBUGS.txt" 
 biomass.map <- read.table("ybio.txt", header=TRUE) 
 
+# Define vectors used in loop and labeling
 LCT <- c(10,11,30,40,50,60,61,62,100,110,120,130,150,153,160)
 LCTc <- as.character(LCT)
 LCTt <- c("h","h","n","n","t","t","t","t","n","n","h","h","h","h","t")
@@ -67,6 +69,9 @@ params <- c("ftree_lc","fherb_lc","fbare_lc","BMrefT","BMrefH","sigma","cert_w",
 nbiter <- 30000; ns <- 2000
 nlct <- length(LCT)
 
+
+# The fist loop will extract ns(2000) pure land cover pixels for each land cover type (LCT) 
+# It will also estimate prior reference biomasses
 j <- 0
 final <- NULL; final2 <- NULL 
 bioreft_up <- numeric(length(LCT)); bioreft_lw <- numeric(length(LCT))
@@ -100,7 +105,6 @@ for(i in LCT){
    else final2 <- cbind(final2,ylc["MAP_mean"])
 }
 final <- as.matrix(final)
-
 Bref <- data.frame(LC_majority = LCT,
                    Brefh_mu = biorefh_up,
                    Breft_mu = bioreft_up,
@@ -108,6 +112,12 @@ Bref <- data.frame(LC_majority = LCT,
 Bref$Brefh_sigma <- Bref$Brefh_mu*0.15/4
 Bref$Breft_sigma <- Bref$Breft_mu*0.15/4
 
+
+# The second loop will calculate posterior distribution for cover fraction
+# and reference biomasses. Each run consist of nbiter(30000) iterations. 
+# the posteriors of a run is then use as prior of the next run during 15
+# repetition. Each posterior's run are stored in order to restart from the
+# last run if the script crash.
 for(i in 1:15) {
     print(paste("start for LCT",LCT[i]))
     data <- list(bb=as.vector(final[,i]), M = dim(final)[1],
@@ -129,9 +139,13 @@ for(i in 1:15) {
     print(paste("LCT",LCT[i],"....Done"))
 }
 
+# The last run is reshape according to coda library in order to create
+# graphical result od the priors and the posteriors.
 coda.out15 <- read.bugs(out.CWT15)
 dd15 <- gelman.diag(coda.out15)
 
+# The last loop will create a PDF file where all the prior and the posterior distributions for
+# each LCT will be ploted.
 listprior <- setprior(12,prior.frac$ftree_LSCE,Bref,prior.frac,LCTc)
 pdf("Result_LCT_CWT_3.2_certRand_final_testtrue.pdf", width=36, height=20)
 j <- 0; ddf <- NULL; ddfs <- NULL
