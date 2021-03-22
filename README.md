@@ -8,6 +8,7 @@ https://cran.r-project.org/web/packages/R2OpenBUGS/R2OpenBUGS.pdf
 - model_OPENBUGS.txt : the OpenBUGS model framework use to estimate cover fractions and reference biomasses
 - CWT_25-975_refine.csv : the estimated Cross-walking table
 - ybio.tar.xz: a data table with all pure land cover type pixels of 1 km² associated wit sum annual precipitation (mm/year) and biomass (t/ha). This dataset is used to feed the OpenBUGS model in order tho esrtimate cover fractions and reference biomasses. 
+- Hybrid_biomass_map.tif : it is an biomass map spatially discretize in pixel of 1km^2. It map is obtain according to the method describe in 2.2.3 and use to obtain the data set ybio.tar.xz 
 
 # Dependencies
 The scripts use formated data from original NetCDF,GIF and SHP files. Here are the link of the original files :
